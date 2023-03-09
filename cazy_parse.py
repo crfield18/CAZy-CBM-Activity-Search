@@ -1,23 +1,11 @@
 import os
 import wget
 import pandas as pd
+from functions import dir_exists, num_convert
 
 # Current working directory
 home_dir = os.getcwd()
 cbm_page_dir = f'{home_dir}/CAZy_cbm_pages'
-
-# Make directory if it doesn't exist
-def dir_exists(directory:str):
-    if os.path.exists(directory) is False:
-        return os.makedirs(directory)
-    return None
-
-# Convert each value in combined_list to an integer if possible
-def num_convert(num_string:str):
-    try:
-        return int(num_string)
-    except ValueError:
-        return None
 
 # Download all cbm pages listed on CAZy database
 def wget_CAZy():
@@ -52,7 +40,8 @@ def wget_CAZy():
 
 # Convert HTML tables inside CAZy pages to an excel spreadsheet
 def html_to_excel():
-    cbm_dict = {}
+    substrate_dict = {}
+    fold_dict = {}
     # Create list of all html files in current directory
     html_files = [file for file in os.listdir(cbm_page_dir) if file.endswith('.html')]
     html_files.sort()
@@ -76,16 +65,16 @@ def html_to_excel():
 
         # Use Note row if Activities row is empty
         if isinstance(labelled_html_df[1].loc['Activities in Family'], float) is True:
-            cbm_dict[file.strip('.html')] = labelled_html_df[1].loc['Note']
+            substrate_dict[file.strip('.html')] = labelled_html_df[1].loc['Note']
         else:
-            cbm_dict[file.strip('.html')] = labelled_html_df[1].loc['Activities in Family']
+            substrate_dict[file.strip('.html')] = labelled_html_df[1].loc['Activities in Family']
     pages_writer.close()
 
     # Set up cbm table excel file writing
     cbm_table_writer = pd.ExcelWriter(f'{home_dir}/CAZy CBM Table.xlsx', engine='xlsxwriter')
 
     # Convert CBM dictionary to a DataFrame
-    cbm_df = pd.DataFrame.from_dict(cbm_dict, orient="index")
+    cbm_df = pd.DataFrame.from_dict(substrate_dict, orient="index")
     cbm_df.columns = ['Activities in Family']
 
     # Convert DataFrame to Excel file

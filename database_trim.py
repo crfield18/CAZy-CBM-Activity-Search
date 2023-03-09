@@ -1,8 +1,7 @@
 import os
 from pathlib import Path
-import zipfile
 import wget
-from cazy_parse import dir_exists
+from functions import dir_exists, unzip
 
 # Current working directory
 home_dir = os.getcwd()
@@ -21,17 +20,12 @@ def wget_database():
     # Return path to cazy_data.zip
     return f'{database_dir}/cazy_data.zip'
 
-# Unzip a zipped file
-def unzip(zip_file:str, output_dir:str):
-    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-        zip_ref.extractall(output_dir)
-
 # Read the database file and extract the lines relevant to CBMs
 def db_trim(database_file:str):
     output_file = open('cazy_data_cbm_only.txt', 'w', encoding='utf-8')
-    with open(database_file, 'r', encoding='utf-8') as file:
+    with open(database_file, 'r', encoding='utf-8') as input_file:
         # Write each line containing 'CBM' in the left column to the trimmed database file
-        for line in file:
+        for line in input_file:
             if 'CBM' not in line.split()[0]:
                 pass
             else:
@@ -40,7 +34,10 @@ def db_trim(database_file:str):
 def main():
     db_zip = wget_database()
     unzip(zip_file=db_zip, output_dir=database_dir)
-    db_trim(f'{database_dir}/ssd/biblio/cazy_data/cazy_data.txt')
+    try:
+        db_trim(f'{database_dir}/ssd/biblio/cazy_data/cazy_data.txt')
+    except FileNotFoundError:
+        db_trim(f'{database_dir}/ssd 2/biblio/cazy_data/cazy_data.txt')
 
 if __name__ == '__main__':
     main()
