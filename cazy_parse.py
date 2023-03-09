@@ -41,7 +41,7 @@ def wget_CAZy():
 # Convert HTML tables inside CAZy pages to an excel spreadsheet
 def html_to_excel():
     substrate_dict = {}
-    fold_dict = {}
+    # fold_dict = {}
     # Create list of all html files in current directory
     html_files = [file for file in os.listdir(cbm_page_dir) if file.endswith('.html')]
     html_files.sort()
