@@ -1,6 +1,7 @@
 import os
 import zipfile
 
+# Unzip zipped file
 def unzip(zip_file:str, output_dir:str):
     with zipfile.ZipFile(zip_file, 'r') as zip_ref:
         zip_ref.extractall(output_dir)

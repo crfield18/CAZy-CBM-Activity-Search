@@ -31,7 +31,7 @@ Consolidates the 'Activity in Family' information from each CBM page into a sing
 
 Downloads and extracts each CBM listed in the CAZy database across bacteria, archaea, viruses and eukaryota.
 
-### **functions.py**
+### **cazy_functions.py**
 
 Generic functions used across the other scripts.
 ___
