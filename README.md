@@ -1,4 +1,4 @@
-# CAZy Database Parse
+# CAZy Database Parser
 
 <!-- Brief description -->
 
@@ -25,7 +25,7 @@ ___
 
 ### **cazy_parse.py**
 
-Consolidates the 'Activity in Family' information from each CBM page into a single excel file. 'Note' information is used in place of 'Activity in Fimily' if that field is not populated.
+Consolidates the 'Activity in Family' information from each CBM page into a single excel file. 'Note' information is used in place of 'Activity in Family' if that field is not populated.
 
 ### **database_trim.py**
 
