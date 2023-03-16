@@ -1,27 +1,27 @@
-import os
-from pathlib import Path
+import pathlib
+from collections import defaultdict
 import pandas as pd
 import wget
-from collections import defaultdict
 import utils.cazy_functions as func
 
-# Current working directory
-home_dir = os.getcwd()
-downloads_dir = f'{home_dir}/downloads'
-results_dir = f'{home_dir}/results'
+# Working directory
+cwd = pathlib.Path.cwd()
+downloads_dir = cwd.joinpath('downloads')
+results_dir = cwd.joinpath('results')
+pages_dir = downloads_dir.joinpath('cbm_pages')
 
 # Download the cazy_data file to the CAZy_database directory
 def wget_database():
     # Make CAZy_database directory if it does not exist
     func.dir_exists(downloads_dir)
     # Download cazy_data.zip to CAZy_database if it does not exist
-    database_zip = Path(f'{downloads_dir}/cazy_data.zip')
+    database_zip = downloads_dir.joinpath('cazy_data.zip')
     if database_zip.is_file():
         pass
     else:
-        wget.download(url='http://www.cazy.org/IMG/cazy_data/cazy_data.zip', out=downloads_dir)
+        wget.download(url='http://www.cazy.org/IMG/cazy_data/cazy_data.zip', out=str(downloads_dir))
     # Return path to cazy_data.zip
-    return f'{downloads_dir}/cazy_data.zip'
+    return database_zip
 
 # Read the database file and extract the lines relevant to CBMs
 def db_trim(database_file:str):
@@ -32,7 +32,7 @@ def db_trim(database_file:str):
         'GenBank Accession Number': []
     }
     family_list = []
-    
+
     with open(database_file, 'r', encoding='utf-8') as input_file:
         # Write each line containing 'CBM' in the left column to the trimmed database
         for line in input_file:
@@ -49,15 +49,15 @@ def db_trim(database_file:str):
 
     ## SHEET 1 ##
     # Write out trimmed database
-    database_writer = pd.ExcelWriter(f'{results_dir}/cazy_data_cbm_only.xlsx', engine='xlsxwriter')
+    database_writer = pd.ExcelWriter(results_dir.joinpath('cazy_data_cbm_only.xlsx'), engine='xlsxwriter')
     cbm_df = pd.DataFrame.from_dict(cbm_database)
     cbm_df.to_excel(database_writer, sheet_name='CAZy Database CBMs', index=False, header=True)
 
     ## SHEET 2 ##
     # Count the occurrences of each CBM family in the trimmed
     family_counter = defaultdict(int)
-    for f in cbm_database['Family']:
-        family_counter[f] += 1
+    for family in cbm_database['Family']:
+        family_counter[family] += 1
     family_counter = dict(family_counter)
 
     # Add any missing families to the counter dictionary
@@ -74,8 +74,8 @@ def db_trim(database_file:str):
     ## SHEET 3 ##
     # Count the occurrences of each Domain in the trimmed database
     domain_counter = defaultdict(int)
-    for d in cbm_database['Domain']:
-        domain_counter[d] += 1
+    for domain in cbm_database['Domain']:
+        domain_counter[domain] += 1
     domain_counter = dict(domain_counter)
 
     domain_counter = {domain: count for domain, count in sorted(domain_counter.items(), key=lambda item: item[1], reverse=True)}
